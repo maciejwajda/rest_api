@@ -1,6 +1,8 @@
 package api.comments;
 
+import api.Comments;
 import org.junit.Test;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,31 +15,31 @@ public class GetCommentsTest {
     private static final String COMMENTS_ENDPOINT = "https://jsonplaceholder.typicode.com/comments";
 
     @Test
-    public void getCommentsAndVerifyResponse(){
+    public void getCommentsAndVerifyResponse() {
         given().
                 expect().
                 statusCode(200).
                 and().body("", hasSize(greaterThan(0))).
                 and().body("email", hasItem("Jayne_Kuhic@sydney.com")).
-        when().
+                when().
                 get(COMMENTS_ENDPOINT);
     }
 
     @Test
-    public void getCommentsAndDeserialize(){
-        List<CommentsPojo> comments = when().
+    public void getCommentsAndDeserialize() {
+        List<Comments> comments = when().
                 get(COMMENTS_ENDPOINT).
-        then().
-                extract().body().jsonPath().getList("", CommentsPojo.class);
+                then().
+                extract().body().jsonPath().getList("", Comments.class);
     }
 
     @Test
-    public void getCommentsAndFilter(){
-        List<CommentsPojo> comments = when().
+    public void getCommentsAndFilter() {
+        List<Comments> comments = when().
                 get(COMMENTS_ENDPOINT).
                 then().
-                extract().body().jsonPath().getList("", CommentsPojo.class);
-        List<CommentsPojo> filteredComments = comments.stream().
+                extract().body().jsonPath().getList("", Comments.class);
+        List<Comments> filteredComments = comments.stream().
                 filter(c -> c.getId() == 1).
                 filter(c -> !c.getBody().contains("non")).
                 collect(Collectors.toList());

@@ -1,9 +1,9 @@
-package api.comments;
+package api;
 
 import lombok.Data;
 
 @Data
-class CommentsPojo {
+public class Comments {
     private int postId;
     private int id;
     private String name;
