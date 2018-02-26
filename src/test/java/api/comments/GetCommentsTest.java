@@ -12,8 +12,6 @@ import static org.hamcrest.Matchers.*;
 
 public class GetCommentsTest {
 
-    private static final String COMMENTS_ENDPOINT = "https://jsonplaceholder.typicode.com/comments";
-
     @Test
     public void getCommentsAndVerifyResponse() {
         given().
@@ -22,13 +20,13 @@ public class GetCommentsTest {
                 and().body("", hasSize(greaterThan(0))).
                 and().body("email", hasItem("Jayne_Kuhic@sydney.com")).
                 when().
-                get(COMMENTS_ENDPOINT);
+                get(Comments.COMMENTS_ENDPOINT);
     }
 
     @Test
     public void getCommentsAndDeserialize() {
         List<Comments> comments = when().
-                get(COMMENTS_ENDPOINT).
+                get(Comments.COMMENTS_ENDPOINT).
                 then().
                 extract().body().jsonPath().getList("", Comments.class);
     }
@@ -36,7 +34,7 @@ public class GetCommentsTest {
     @Test
     public void getCommentsAndFilter() {
         List<Comments> comments = when().
-                get(COMMENTS_ENDPOINT).
+                get(Comments.COMMENTS_ENDPOINT).
                 then().
                 extract().body().jsonPath().getList("", Comments.class);
         List<Comments> filteredComments = comments.stream().
