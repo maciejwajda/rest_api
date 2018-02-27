@@ -1,12 +1,11 @@
 package api.comments;
 
+import api.EndPoints;
 import io.restassured.response.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.util.List;
 import java.util.function.Predicate;
-
 import static api.Filter.applyFilter;
 import static api.Serializer.deserializeAsList;
 import static io.restassured.RestAssured.given;
@@ -20,7 +19,7 @@ public class GetCommentsTest {
     @BeforeClass
     public static void getCommentsEndpoint() {
         response = given().expect().statusCode(200).
-                when().get(Comment.COMMENTS_ENDPOINT);
+                when().get(EndPoints.COMMENTS);
     }
 
     @Test
