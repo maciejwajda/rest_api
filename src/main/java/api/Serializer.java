@@ -5,7 +5,15 @@ import java.util.List;
 
 public class Serializer {
 
-    public static <T> List<T> deserializeAsList(Response response, Class<T> objectType){
-        return response.body().jsonPath().getList("", objectType);
+
+    /**
+     * Deserialize JSON from response
+     *
+     * @param response to be deserialized
+     * @param genericType The generic list type
+     * @return List of deserialized objects of genericType type
+     */
+    public static <T> List<T> deserializeAsList(Response response, Class<T> genericType){
+        return response.body().jsonPath().getList("", genericType);
     }
 }
