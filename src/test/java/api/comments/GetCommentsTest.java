@@ -1,47 +1,50 @@
 package api.comments;
 
-import api.Comments;
+import io.restassured.response.Response;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.function.Predicate;
+import static api.Filter.applyFilter;
+import static api.Serializer.deserializeAsList;
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
 
 public class GetCommentsTest {
 
-    @Test
-    public void getCommentsAndVerifyResponse() {
-        given().
-                expect().
-                statusCode(200).
-                and().body("", hasSize(greaterThan(0))).
-                and().body("email", hasItem("Jayne_Kuhic@sydney.com")).
-                when().
-                get(Comments.COMMENTS_ENDPOINT);
+    private static Response response;
+
+    @BeforeClass
+    public static void getCommentsEndpoint(){
+        response = given().expect().statusCode(200).
+                when().get(Comment.COMMENTS_ENDPOINT);
     }
 
     @Test
-    public void getCommentsAndDeserialize() {
-        List<Comments> comments = when().
-                get(Comments.COMMENTS_ENDPOINT).
-                then().
-                extract().body().jsonPath().getList("", Comments.class);
+    public void getCommentsAndVerifyResponse() {
+        whenGetCommentEndpoint().
+            then().
+                body("", hasSize(greaterThan(0))).
+                and().body("email", hasItem("Jayne_Kuhic@sydney.com"));
     }
 
     @Test
     public void getCommentsAndFilter() {
-        List<Comments> comments = when().
-                get(Comments.COMMENTS_ENDPOINT).
-                then().
-                extract().body().jsonPath().getList("", Comments.class);
-        List<Comments> filteredComments = comments.stream().
-                filter(c -> c.getId() == 1).
-                filter(c -> !c.getBody().contains("non")).
-                collect(Collectors.toList());
+        List<Comment> comments = deserializeAsList(whenGetCommentEndpoint(), Comment.class);
+        List<Comment> filteredComments = applyFilter(comments, idEquals1AndBodyContainsNon());
+        assertTrue(filteredComments.stream().allMatch(idEquals1AndBodyContainsNon()));
     }
+
+    private Predicate<Comment> idEquals1AndBodyContainsNon(){
+        return comment -> comment.getId() == 1 && comment.getBody().contains("non");
+    }
+
+    private Response whenGetCommentEndpoint(){
+        return response;
+    }
+
+
 
 
 }
