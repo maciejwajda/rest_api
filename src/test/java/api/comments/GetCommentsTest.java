@@ -3,8 +3,10 @@ package api.comments;
 import io.restassured.response.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import java.util.List;
 import java.util.function.Predicate;
+
 import static api.Filter.applyFilter;
 import static api.Serializer.deserializeAsList;
 import static io.restassured.RestAssured.given;
@@ -16,35 +18,32 @@ public class GetCommentsTest {
     private static Response response;
 
     @BeforeClass
-    public static void getCommentsEndpoint(){
+    public static void getCommentsEndpoint() {
         response = given().expect().statusCode(200).
                 when().get(Comment.COMMENTS_ENDPOINT);
     }
 
     @Test
     public void getCommentsAndVerifyResponse() {
-        whenGetCommentEndpoint().
-            then().
+        whenGetCommentsEndpoint().
+                then().
                 body("", hasSize(greaterThan(0))).
                 and().body("email", hasItem("Jayne_Kuhic@sydney.com"));
     }
 
     @Test
     public void getCommentsAndFilter() {
-        List<Comment> comments = deserializeAsList(whenGetCommentEndpoint(), Comment.class);
+        List<Comment> comments = deserializeAsList(whenGetCommentsEndpoint(), Comment.class);
         List<Comment> filteredComments = applyFilter(comments, idEquals1AndBodyContainsNon());
         assertTrue(filteredComments.stream().allMatch(idEquals1AndBodyContainsNon()));
     }
 
-    private Predicate<Comment> idEquals1AndBodyContainsNon(){
+    private Predicate<Comment> idEquals1AndBodyContainsNon() {
         return comment -> comment.getId() == 1 && comment.getBody().contains("non");
     }
 
-    private Response whenGetCommentEndpoint(){
+    private Response whenGetCommentsEndpoint() {
         return response;
     }
-
-
-
 
 }
