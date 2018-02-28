@@ -5,12 +5,12 @@ import io.restassured.response.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import java.util.List;
-import java.util.function.Predicate;
 import static api.Filter.applyFilter;
 import static api.Serializer.deserializeAsList;
+import static api.comments.CommentsFilters.ID_EQUALS_1_AND_BODY_CONTAINS_NON;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertTrue;
 
 public class GetCommentsTest {
 
@@ -33,12 +33,13 @@ public class GetCommentsTest {
     @Test
     public void getCommentsAndFilter() {
         List<Comment> comments = deserializeAsList(whenGetCommentsEndpoint(), Comment.class);
-        List<Comment> filteredComments = applyFilter(comments, idEquals1AndBodyContainsNon());
-        assertTrue(filteredComments.stream().allMatch(idEquals1AndBodyContainsNon()));
-    }
-
-    private Predicate<Comment> idEquals1AndBodyContainsNon() {
-        return comment -> comment.getId() == 1 && comment.getBody().contains("non");
+        List<Comment> filteredComments = applyFilter(comments, ID_EQUALS_1_AND_BODY_CONTAINS_NON);
+        assertThat("Wrong filtering in comments", filteredComments, everyItem(
+                allOf(
+                        hasProperty("id", equalTo(1)),
+                        hasProperty("body", containsString("non"))
+                )
+        ));
     }
 
     private Response whenGetCommentsEndpoint() {
